@@ -1,0 +1,23 @@
+<doctrine-mapping xmlns="https://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="App\Domains\IdentityAccess\Domain\Aggregates\BusinessAggregate" table="businesses">
+        <field name="businessUuid" type="string" column="business_uuid" />
+        <embedded name="businessName" class="App\Domains\IdentityAccess\Domain\Entities\Business\BusinessName" use-column-prefix="false"/>
+        <embedded name="businessLogo" class="App\Domains\IdentityAccess\Domain\Entities\Business\BusinessLogo" use-column-prefix="false"/>
+        <embedded name="businessEmail" class="App\Domains\IdentityAccess\Domain\Entities\Business\BusinessEmail" use-column-prefix="false"/>
+        <embedded name="businessPhone" class="App\Domains\IdentityAccess\Domain\Entities\Business\BusinessPhone" use-column-prefix="false"/>
+        <embedded name="businessAddress" class="App\Domains\IdentityAccess\Domain\Entities\Business\BusinessAddress" use-column-prefix="false"/>
+        <embedded name="businessWebsite" class="App\Domains\IdentityAccess\Domain\Entities\Business\BusinessWebsite" use-column-prefix="false"/>
+        <field name="businessIsActive" type="boolean" column="business_is_active" nullable="false"/>
+        <one-to-many field="businessUsers" target-entity="App\Domains\IdentityAccess\Domain\Entities\Business\BusinessUser">
+            <cascade>
+                <cascade-persist/>
+                <cascade-remove/>
+            </cascade>
+            <orphan-removal>true</orphan-removal>
+            <mapped-by>business</mapped-by>
+        </one-to-many>
+    </entity>
+</doctrine-mapping>

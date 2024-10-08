@@ -1,0 +1,82 @@
+version: "3.7"
+
+services:
+    php:
+        tty: true
+        platform: linux/x86_64
+        container_name: "${APP_NAME}-php-fpm"
+        build:
+            context: .docker/php
+            args:
+                - XDEBUG_INSTALL=1
+                - USER_DOCKER_ID=${DOCKER_USER_ID}
+                - GROUP_DOCKER_ID=${DOCKER_GROUP_ID}
+                - PROJECT_PATH=${DOCKER_CODE_FOLDER}
+        user: "${DOCKER_USER_ID}:${DOCKER_GROUP_ID}"
+        volumes:
+          - ./:${DOCKER_CODE_FOLDER}:delegated
+        environment:
+            XDEBUG_CONFIG: 'remote_host=${DOCKER_REMOTE_HOST} remote_enable=1'
+            PHP_IDE_CONFIG: 'serverName=${DOCKER_SERVER_NAME}'
+        ports:
+            - 9002:9000
+        depends_on:
+            - postgres
+            - redis
+        networks:
+            - ddd-network
+    nginx:
+        tty: true
+        image: nginx:latest
+        container_name: "${APP_NAME}-nginx"
+        ports:
+            - "${DOCKER_NGINX_PORT}:80"
+            - "${DOCKER_NGINX_SSL_PORT}:443"
+        volumes:
+            - ./.docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+            - ./.docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+            - ./.docker/nginx/ssl:/etc/nginx/ssl
+            - ./:${DOCKER_CODE_FOLDER}:delegated
+        depends_on:
+            - php
+        networks:
+            - ddd-network
+    postgres:
+        container_name: "${APP_NAME}-pgsql"
+        image: postgres:15.3
+        restart: unless-stopped
+        environment:
+            POSTGRES_PASSWORD: "${DB_PASSWORD}"
+            POSTGRES_USER: "${DB_USERNAME}"
+            POSTGRES_DB: "${DB_DATABASE}"
+        ports:
+            - "${DOCKER_PGSQL_PORT}:${DB_PORT}"
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+            - ./.docker/postgres/data:/var/lib/postgresql/data
+        networks:
+            - ddd-network
+    redis:
+        tty: true
+        image: redis:alpine
+        container_name: "${APP_NAME}-redis"
+        ports:
+            - "${DOCKER_REDIS_PORT}:6379"
+        volumes:
+            - ./.docker/redis/data:/data
+            - ./.docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
+        command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
+        networks:
+            - ddd-network
+networks:
+    ddd-network:
+        name: "${APP_NAME}-network"
+        driver: bridge
+        ipam:
+            driver: default
+            config:
+                - subnet: 192.168.220.0/28
+volumes:
+    postgres_data:
+        driver: local
+

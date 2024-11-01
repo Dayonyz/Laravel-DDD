@@ -1,3 +1,5 @@
+.docker/postgres/data
+
 /.phpunit.cache
 /node_modules
 

@@ -6,47 +6,44 @@ use App\Domains\Shared\Domain\Entity;
 use App\Domains\Shared\Domain\ValueObject\Password;
 use App\Domains\IdentityAccess\Domain\Enums\UserAccountTypeEnum;
 use App\Domains\IdentityAccess\Domain\Enums\UserTitleEnum;
-use App\Domains\IdentityAccess\Domain\Exceptions\UserEmailNotDefinedException;
+use App\Domains\IdentityAccess\Domain\Entities\User\Dto\UserDto;
 
 abstract class User extends Entity
 {
-    protected UserUuid $userUuid;
-    protected string $userTitle;
-    protected ?UserDisplayName $userDisplayName;
-    protected UserFullName $userFullName;
-    protected ?UserAvatar $userAvatar;
-    protected string $userAccountType;
-    protected UserEmail $userEmail;
-    protected UserPhone $userPhone;
-    protected UserPassword $userPassword;
+    protected UserUuid $uuid;
+    protected string $title;
+    protected UserFullName $fullName;
+    protected string $accountType;
+    protected UserEmail $email;
+    protected UserPhone $phone;
+    protected UserPassword $password;
+    protected ?UserAvatar $avatar;
+    protected ?UserDisplayName $displayName;
+    protected bool $isActive;
 
-    /**
-     * @throws UserEmailNotDefinedException
-     */
-    public function __construct(
-        UserTitleEnum       $title,
-        UserFullName        $fullName,
-        UserEmail           $email,
-        UserPhone           $phone,
-        UserPassword        $password,
-        ?UserAvatar         $avatar,
-        ?UserDisplayName    $displayName,
+    protected function __construct(
+        UserDto $userDto,
     ) {
         parent::__construct();
-        $this->setUserUuid(UserUuid::random());
-        $this->setUserAccountType(static::getUserAccountTypeEnum());
-        $this->setUserTitle($title);
-        $this->setUserDisplayName($displayName);
-        $this->setUserFullName($fullName);
-        $this->setUserAvatar($avatar);
-        $this->setUserEmail($email);
+        $this->setUuid(UserUuid::random());
+        $this->setAccountType(static::getUserAccountTypeEnum());
+        $this->setTitle($userDto->title);
+        $this->setFullName(new UserFullName($userDto->firstName, $userDto->lastName));
+        $this->setEmail(new UserEmail($userDto->email));
+        $this->setPhone(new UserPhone($userDto->phoneCode, $userDto->phoneNumber));
+        $this->setPassword(new UserPassword($userDto->password));
 
-        if (!$displayName) {
+        if ($userDto->avatarUrl) {
+            $this->setAvatar(new UserAvatar($userDto->avatarUrl));
+        }
+
+        if ($userDto->displayName) {
+            $this->setDisplayName(new UserDisplayName($userDto->displayName));
+        } else {
             $this->setDisplayNameFromEmail();
         }
 
-        $this->setUserPhone($phone);
-        $this->setUserPassword($password);
+        $this->setIsActive($userDto->isActive);
     }
 
     private function __clone(): void
@@ -56,106 +53,104 @@ abstract class User extends Entity
 
     abstract public static function getUserAccountTypeEnum(): UserAccountTypeEnum;
 
-    protected function setUserUuid(UserUuid $userUuid): void
+    protected function setUuid(UserUuid $userUuid): void
     {
-        $this->userUuid = $userUuid;
+        $this->uuid = $userUuid;
     }
 
-    public function getUserUuid(): UserUuid
+    public function getUuid(): UserUuid
     {
-        return $this->userUuid;
+        return $this->uuid;
     }
 
-    protected function setUserTitle(UserTitleEnum $titleEnum): void
+    protected function setTitle(UserTitleEnum $titleEnum): void
     {
-        $this->userTitle = $titleEnum->value;
+        $this->title = $titleEnum->value;
     }
 
-    public function getUserTitle(): string
+    public function getTitle(): string
     {
-        return $this->userTitle;
+        return $this->title;
     }
 
-    /**
-     * @throws UserEmailNotDefinedException
-     */
     protected function setDisplayNameFromEmail(): void
     {
-        if (!$this->userEmail) {
-            throw new UserEmailNotDefinedException('User display name can not be parsed from empty email');
-        }
-
-        $parsed  = explode('@', $this->userEmail->getEmail());
-        $this->userDisplayName = new UserDisplayName($parsed[0]);
+        $parsed  = explode('@', $this->email->getEmail());
+        $this->displayName = new UserDisplayName($parsed[0]);
     }
 
-    protected function setUserDisplayName(?UserDisplayName $userDisplayName): void
+    protected function setDisplayName(?UserDisplayName $userDisplayName): void
     {
-        $this->userDisplayName = $userDisplayName;
+        $this->displayName = $userDisplayName;
     }
 
-    public function getUserDisplayName(): ?UserDisplayName
+    public function getDisplayName(): ?UserDisplayName
     {
-        return $this->userDisplayName;
+        return $this->displayName;
     }
 
-    protected function setUserFullName(UserFullName $userFullName): void
+    protected function setFullName(UserFullName $userFullName): void
     {
-        $this->userFullName = $userFullName;
+        $this->fullName = $userFullName;
     }
 
-    public function getUserFullName(): UserFullName
+    public function getFullName(): UserFullName
     {
-        return $this->userFullName;
+        return $this->fullName;
     }
 
-    protected function setUserAvatar(?UserAvatar $userAvatar): void
+    protected function setAvatar(?UserAvatar $userAvatar): void
     {
-        $this->userAvatar = $userAvatar;
+        $this->avatar = $userAvatar;
     }
 
-    public function getUserAvatar(): ?UserAvatar
+    public function getAvatar(): ?UserAvatar
     {
-        return $this->userAvatar;
+        return $this->avatar;
     }
 
-    protected function setUserAccountType(UserAccountTypeEnum $userAccountType): void
+    protected function setAccountType(UserAccountTypeEnum $userAccountType): void
     {
-        $this->userAccountType = $userAccountType->value;
+        $this->accountType = $userAccountType->value;
     }
 
-    public function getUserAccountType(): string
+    public function getAccountType(): string
     {
-        return $this->userAccountType;
+        return $this->accountType;
     }
 
-    protected function setUserEmail(UserEmail $userEmail): void
+    protected function setEmail(UserEmail $userEmail): void
     {
-        $this->userEmail = $userEmail;
+        $this->email = $userEmail;
     }
 
-    public function getUserEmail(): UserEmail
+    public function getEmail(): UserEmail
     {
-        return $this->userEmail;
+        return $this->email;
     }
 
-    protected function setUserPhone(UserPhone $userPhone): void
+    protected function setPhone(UserPhone $userPhone): void
     {
-        $this->userPhone = $userPhone;
+        $this->phone = $userPhone;
     }
 
-    public function getUserPhone(): UserPhone
+    public function getPhone(): UserPhone
     {
-        return $this->userPhone;
+        return $this->phone;
     }
 
-    protected function setUserPassword(Password $userPassword): void
+    protected function setPassword(Password $userPassword): void
     {
-        $this->userPassword = $userPassword;
+        $this->password = $userPassword;
     }
 
-    public function getUserPassword(): UserPassword
+    protected function setIsActive(bool $isActive)
     {
-        return $this->userPassword;
+        $this->isActive = $isActive;
+    }
+
+    public function getIsActive(): bool
+    {
+        return $this->isActive;
     }
 }

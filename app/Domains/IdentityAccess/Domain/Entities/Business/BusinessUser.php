@@ -3,48 +3,25 @@
 namespace App\Domains\IdentityAccess\Domain\Entities\Business;
 
 use App\Domains\IdentityAccess\Domain\Aggregates\BusinessAggregate;
+use App\Domains\IdentityAccess\Domain\Entities\User\Dto\UserDto;
 use App\Domains\IdentityAccess\Domain\Entities\User\User;
-use App\Domains\IdentityAccess\Domain\Entities\User\UserAvatar;
-use App\Domains\IdentityAccess\Domain\Entities\User\UserDisplayName;
-use App\Domains\IdentityAccess\Domain\Entities\User\UserEmail;
-use App\Domains\IdentityAccess\Domain\Entities\User\UserFullName;
-use App\Domains\IdentityAccess\Domain\Entities\User\UserPassword;
-use App\Domains\IdentityAccess\Domain\Entities\User\UserPhone;
 use App\Domains\IdentityAccess\Domain\Enums\UserAccountTypeEnum;
-use App\Domains\IdentityAccess\Domain\Enums\UserTitleEnum;
-use App\Domains\IdentityAccess\Domain\Exceptions\UserEmailNotDefinedException;
 
 class BusinessUser extends User
 {
     protected ?int $businessId;
     protected BusinessAggregate $business;
-    protected bool $userIsActive;
 
     private function __construct(
         BusinessAggregate   $business,
-        UserTitleEnum       $userTitle,
-        UserFullName        $userFullName,
-        UserEmail           $userEmail,
-        UserPhone           $userPhone,
-        UserPassword        $userPassword,
-        ?UserAvatar         $userAvatar,
-        ?UserDisplayName    $userDisplayName,
-        ?bool               $userIsActive,
-    )
-    {
+        UserDto             $userDto
+    ) {
         parent::__construct(
-            $userTitle,
-            $userFullName,
-            $userEmail,
-            $userPhone,
-            $userPassword,
-            $userAvatar,
-            $userDisplayName
+            $userDto
         );
 
         $this->setBusinessId($business->getId());
         $this->setBusiness($business);
-        $this->setBusinessUserIsActive(!!$userIsActive);
     }
 
     public function getBusinessId(): string
@@ -52,7 +29,7 @@ class BusinessUser extends User
         return $this->businessId;
     }
 
-    public function setBusinessId(?int $businessId): void
+    protected function setBusinessId(?int $businessId): void
     {
         $this->businessId = $businessId;
     }
@@ -62,34 +39,17 @@ class BusinessUser extends User
         return UserAccountTypeEnum::BUSINESS;
     }
 
-    /**
-     * @throws UserEmailNotDefinedException
-     */
     public static function createBusinessUser(
         BusinessAggregate $business,
-        UserTitleEnum     $userTitle,
-        UserFullName      $userFullName,
-        UserEmail         $userEmail,
-        UserPhone         $userPhone,
-        UserPassword      $userPassword,
-        ?UserAvatar       $userAvatar,
-        ?UserDisplayName  $userDisplayName,
-        ?bool             $userIsActive = null,
+        UserDto           $userDto
     ): static {
        return new static(
            $business,
-           $userTitle,
-           $userFullName,
-           $userEmail,
-           $userPhone,
-           $userPassword,
-           $userAvatar,
-           $userDisplayName,
-           (bool)$userIsActive
+           $userDto
        );
     }
 
-    public function setBusiness(BusinessAggregate $business)
+    protected function setBusiness(BusinessAggregate $business)
     {
         $this->business = $business;
     }
@@ -97,15 +57,5 @@ class BusinessUser extends User
     public function getBusiness(): ?BusinessAggregate
     {
         return $this->business;
-    }
-
-    protected function setBusinessUserIsActive(bool $isActive)
-    {
-        $this->userIsActive = $isActive;
-    }
-
-    public function getBusinessUserIsActive(): bool
-    {
-        return $this->userIsActive;
     }
 }

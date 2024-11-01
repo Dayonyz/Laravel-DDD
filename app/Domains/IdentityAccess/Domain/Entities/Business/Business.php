@@ -2,14 +2,9 @@
 
 namespace App\Domains\IdentityAccess\Domain\Entities\Business;
 
+use App\Domains\IdentityAccess\Domain\Entities\User\Dto\UserDto;
 use App\Domains\Shared\Domain\Entity;
-use App\Domains\IdentityAccess\Application\Bus\Command\CreateBusinessAccountPayload;
-use App\Domains\IdentityAccess\Domain\Entities\User\UserAvatar;
-use App\Domains\IdentityAccess\Domain\Entities\User\UserDisplayName;
-use App\Domains\IdentityAccess\Domain\Entities\User\UserEmail;
-use App\Domains\IdentityAccess\Domain\Entities\User\UserFullName;
-use App\Domains\IdentityAccess\Domain\Entities\User\UserPassword;
-use App\Domains\IdentityAccess\Domain\Entities\User\UserPhone;
+use App\Domains\IdentityAccess\Application\Bus\Command\Dto\CreateBusinessAccountDto;
 use App\Domains\IdentityAccess\Domain\Entities\User\UserUuid;
 use App\Domains\IdentityAccess\Domain\Enums\UserTitleEnum;
 use App\Domains\IdentityAccess\Domain\Factories\Account;
@@ -60,22 +55,15 @@ abstract class Business extends Entity implements Account
     }
 
     abstract protected function createBusinessUser(
-        UserTitleEnum    $userTitle,
-        UserFullName     $userFullName,
-        UserEmail        $userEmail,
-        UserPhone        $userPhone,
-        UserPassword     $userPassword,
-        ?UserAvatar      $userAvatar,
-        ?UserDisplayName $displayName,
-        ?bool             $userIsActive,
+       UserDto $userDto
     ): BusinessUser;
 
-    public static function createBusinessAccount(CreateBusinessAccountPayload $dto): static {
+    public static function createBusinessAccount(CreateBusinessAccountDto $dto): static {
         $business = new static(
             new BusinessName($dto->businessName),
             new BusinessLogo($dto->businessLogo),
-            BusinessEmail::createVerified($dto->businessEmail),
-            BusinessPhone::createVerified($dto->businessPhoneCode, $dto->businessPhone),
+            new BusinessEmail($dto->businessEmail),
+            new BusinessPhone($dto->businessPhoneCode, $dto->businessPhone),
             new BusinessAddress(
                 $dto->businessPostCode,
                 $dto->businessCountryIso,
@@ -88,16 +76,18 @@ abstract class Business extends Entity implements Account
         );
 
         $user = $business->createBusinessUser(
-            UserTitleEnum::tryFrom($dto->userTitle),
-            new UserFullName($dto->userFirstName, $dto->userLastName),
-            $dto->userEmail ?  new UserEmail($dto->userEmail) : new UserEmail($dto->businessEmail),
-            $dto->userPhone && $dto->userPhoneCode ?
-                new UserPhone($dto->userPhoneCode, $dto->userPhone) :
-                new UserPhone($dto->businessPhoneCode, $dto->businessPhone),
-            new UserPassword($dto->userPassword),
-            $dto->userAvatar ? new UserAvatar($dto->userAvatar) : null,
-            $dto->userDisplayName ? new UserDisplayName($dto->userDisplayName) : null,
-            $dto->businessIsActive,
+            new UserDto(
+                UserTitleEnum::tryFrom($dto->userTitle),
+                $dto->userFirstName,
+                $dto->userLastName,
+                $dto->userEmail ? : $dto->businessEmail,
+                $dto->userPhone && $dto->userPhoneCode ? $dto->userPhoneCode : $dto->businessPhoneCode,
+                $dto->userPhone && $dto->userPhoneCode ?  $dto->userPhone : $dto->businessPhone,
+                $dto->userPassword,
+                $dto->userAvatar,
+                $dto->userDisplayName,
+                $dto->businessIsActive
+            )
         );
 
         $business->addUser($user);

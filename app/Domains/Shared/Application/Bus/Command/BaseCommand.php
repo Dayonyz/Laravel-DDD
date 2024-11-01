@@ -14,43 +14,33 @@ abstract class BaseCommand implements CommandContract
     public static function dispatch(...$dispatchArgs): void
     {
         try {
-            $reflection = new \ReflectionMethod(get_called_class(), 'handle');
+            $commandHandlerReflection = new \ReflectionMethod(get_called_class(), 'handle');
         } catch (ReflectionException $exception) {
             throw new CommandDispatcherException($exception->getMessage());
         }
 
-        $handleMethodParams = $reflection->getParameters();
-        $payloadInstancePassed = false;
+        $handlerParams = $commandHandlerReflection->getParameters();
 
-        if (count($handleMethodParams) === 0) {
+        if (count($handlerParams) === 0) {
             throw new CommandDispatcherException('Command handler has no any payload.');
         }
 
-        if (count($dispatchArgs) === 1 &&
-            isset($dispatchArgs[0]) &&
-            is_object($dispatchArgs[0]) &&
-            get_parent_class($dispatchArgs[0]) === BaseCommandPayload::class
-        ) {
-            $payload = $dispatchArgs[0];
-            $payloadInstancePassed = true;
+        $handlerPayloadClass = $handlerParams[0]->getType()->getName();
+
+        if (!in_array(CommandDtoContract::class, class_implements($handlerPayloadClass))) {
+            throw new CommandDispatcherException('Invalid command handler payload definition.');
         }
 
-        $expectedPayloadClass = $handleMethodParams[0]->getType()->getName();
+        $payload = count($dispatchArgs) === 1 && is_object($dispatchArgs[0]) ?
+            $dispatchArgs[0] :
+            call_user_func($handlerPayloadClass . '::fromArray', $dispatchArgs);
 
-        if (!in_array(CommandPayloadContract::class, class_implements($expectedPayloadClass))) {
-            throw new CommandDispatcherException('Invalid command payload definition.');
-        }
-
-        if (!$payloadInstancePassed) {
-            $payload = call_user_func($expectedPayloadClass . '::fromArray', $dispatchArgs);
-        }
-
-        if ($expectedPayloadClass !== $payload::class) {
-            throw new CommandDispatcherException('Invalid command payload definition.');
+        if (get_class($payload) !== $handlerPayloadClass) {
+            throw new CommandDispatcherException('Invalid command dispatcher payload definition.');
         }
 
         $commandBus = app(CommandBus::class);
-        $instance = new $reflection->class;
+        $instance = new $commandHandlerReflection->class;
 
         $handler = function () use ($instance, $payload) {
             App::call([$instance, 'handle'], ['payload' => $payload]);

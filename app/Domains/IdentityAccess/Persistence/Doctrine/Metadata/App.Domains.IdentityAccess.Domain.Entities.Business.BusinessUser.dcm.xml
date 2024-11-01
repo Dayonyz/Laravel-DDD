@@ -3,20 +3,20 @@
                   xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
                           https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
     <entity name="App\Domains\IdentityAccess\Domain\Entities\Business\BusinessUser" table="users">
-        <embedded name="userUuid" class="App\Domains\IdentityAccess\Domain\Entities\User\UserUuid" use-column-prefix="false" />
-        <field name="userTitle" type="string" column="user_title" />
+        <embedded name="uuid" class="App\Domains\IdentityAccess\Domain\Entities\User\UserUuid" use-column-prefix="false" />
+        <field name="title" type="string" column="user_title" />
         <embedded
-            name="userDisplayName"
+            name="displayName"
             class="App\Domains\IdentityAccess\Domain\Entities\User\UserDisplayName"
             use-column-prefix="false"
         />
-        <embedded name="userFullName" class="App\Domains\IdentityAccess\Domain\Entities\User\UserFullName" use-column-prefix="false" />
-        <embedded name="userAvatar" class="App\Domains\IdentityAccess\Domain\Entities\User\UserAvatar" use-column-prefix="false" />
-        <field name="userAccountType" type="string" column="user_account_type" />
-        <embedded name="userEmail" class="App\Domains\IdentityAccess\Domain\Entities\User\UserEmail" use-column-prefix="false" />
-        <embedded name="userPhone" class="App\Domains\IdentityAccess\Domain\Entities\User\UserPhone" use-column-prefix="false" />
-        <embedded name="userPassword" class="App\Domains\IdentityAccess\Domain\Entities\User\UserPassword" use-column-prefix="false" />
-        <field name="userIsActive" type="boolean" column="user_is_active" />
+        <embedded name="fullName" class="App\Domains\IdentityAccess\Domain\Entities\User\UserFullName" use-column-prefix="false" />
+        <embedded name="avatar" class="App\Domains\IdentityAccess\Domain\Entities\User\UserAvatar" use-column-prefix="false" />
+        <field name="accountType" type="string" column="user_account_type" />
+        <embedded name="email" class="App\Domains\IdentityAccess\Domain\Entities\User\UserEmail" use-column-prefix="false" />
+        <embedded name="phone" class="App\Domains\IdentityAccess\Domain\Entities\User\UserPhone" use-column-prefix="false" />
+        <embedded name="password" class="App\Domains\IdentityAccess\Domain\Entities\User\UserPassword" use-column-prefix="false" />
+        <field name="isActive" type="boolean" column="user_is_active" />
         <many-to-one field="business" target-entity="App\Domains\IdentityAccess\Domain\Aggregates\BusinessAggregate" inversed-by="businessUsers">
             <join-column name="business_id" referenced-column-name="id" />
         </many-to-one>

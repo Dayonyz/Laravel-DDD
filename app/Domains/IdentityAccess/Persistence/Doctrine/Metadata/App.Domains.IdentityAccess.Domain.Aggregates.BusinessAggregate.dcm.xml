@@ -4,12 +4,12 @@
                           https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
     <entity name="App\Domains\IdentityAccess\Domain\Aggregates\BusinessAggregate" table="businesses">
         <field name="businessUuid" type="string" column="business_uuid" />
-        <embedded name="businessName" class="App\Domains\IdentityAccess\Domain\Entities\Business\BusinessName" use-column-prefix="false"/>
-        <embedded name="businessLogo" class="App\Domains\IdentityAccess\Domain\Entities\Business\BusinessLogo" use-column-prefix="false"/>
-        <embedded name="businessEmail" class="App\Domains\IdentityAccess\Domain\Entities\Business\BusinessEmail" use-column-prefix="false"/>
-        <embedded name="businessPhone" class="App\Domains\IdentityAccess\Domain\Entities\Business\BusinessPhone" use-column-prefix="false"/>
-        <embedded name="businessAddress" class="App\Domains\IdentityAccess\Domain\Entities\Business\BusinessAddress" use-column-prefix="false"/>
-        <embedded name="businessWebsite" class="App\Domains\IdentityAccess\Domain\Entities\Business\BusinessWebsite" use-column-prefix="false"/>
+        <embedded name="businessName" class="App\Domains\IdentityAccess\Domain\Entities\Business\ValueObjects\BusinessName" use-column-prefix="false"/>
+        <embedded name="businessLogo" class="App\Domains\IdentityAccess\Domain\Entities\Business\ValueObjects\BusinessLogo" use-column-prefix="false"/>
+        <embedded name="businessEmail" class="App\Domains\IdentityAccess\Domain\Entities\Business\ValueObjects\BusinessEmail" use-column-prefix="false"/>
+        <embedded name="businessPhone" class="App\Domains\IdentityAccess\Domain\Entities\Business\ValueObjects\BusinessPhone" use-column-prefix="false"/>
+        <embedded name="businessAddress" class="App\Domains\IdentityAccess\Domain\Entities\Business\ValueObjects\BusinessAddress" use-column-prefix="false"/>
+        <embedded name="businessWebsite" class="App\Domains\IdentityAccess\Domain\Entities\Business\ValueObjects\BusinessWebsite" use-column-prefix="false"/>
         <field name="businessIsActive" type="boolean" column="business_is_active" nullable="false"/>
         <one-to-many field="businessUsers" target-entity="App\Domains\IdentityAccess\Domain\Entities\Business\BusinessUser">
             <cascade>

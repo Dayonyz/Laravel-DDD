@@ -2,11 +2,18 @@
 
 namespace App\Domains\IdentityAccess\Domain\Entities\Business;
 
-use App\Domains\IdentityAccess\Domain\Entities\User\Dto\UserDto;
+use App\Domains\IdentityAccess\Domain\Entities\Business\ValueObjects\BusinessAddress;
+use App\Domains\IdentityAccess\Domain\Entities\Business\ValueObjects\BusinessEmail;
+use App\Domains\IdentityAccess\Domain\Entities\Business\ValueObjects\BusinessLogo;
+use App\Domains\IdentityAccess\Domain\Entities\Business\ValueObjects\BusinessName;
+use App\Domains\IdentityAccess\Domain\Entities\Business\ValueObjects\BusinessPhone;
+use App\Domains\IdentityAccess\Domain\Entities\Business\ValueObjects\BusinessUuid;
+use App\Domains\IdentityAccess\Domain\Entities\Business\ValueObjects\BusinessWebsite;
+use App\Domains\IdentityAccess\Domain\Entities\User\Dto\UserCreateDto;
 use App\Domains\Shared\Domain\Entity;
 use App\Domains\IdentityAccess\Application\Bus\Command\Dto\CreateBusinessAccountDto;
-use App\Domains\IdentityAccess\Domain\Entities\User\UserUuid;
-use App\Domains\IdentityAccess\Domain\Enums\UserTitleEnum;
+use App\Domains\IdentityAccess\Domain\Entities\User\ValueObjects\UserUuid;
+use App\Domains\IdentityAccess\Domain\Entities\User\Enums\UserTitleEnum;
 use App\Domains\IdentityAccess\Domain\Factories\Account;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -55,7 +62,7 @@ abstract class Business extends Entity implements Account
     }
 
     abstract protected function createBusinessUser(
-       UserDto $userDto
+        UserCreateDto $userDto
     ): BusinessUser;
 
     public static function createBusinessAccount(CreateBusinessAccountDto $dto): static {
@@ -76,7 +83,7 @@ abstract class Business extends Entity implements Account
         );
 
         $user = $business->createBusinessUser(
-            new UserDto(
+            new UserCreateDto(
                 UserTitleEnum::tryFrom($dto->userTitle),
                 $dto->userFirstName,
                 $dto->userLastName,

@@ -1,0 +1,12 @@
+<doctrine-mapping xmlns="https://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <embeddable name="App\Domains\IdentityAccess\Domain\Entities\Business\ValueObjects\BusinessAddress" table="businesses">
+        <field name="postCode" type="string" column="business_post_code" length="12" nullable="false"/>
+        <field name="countryIso" type="string" column="business_country_iso" length="2" nullable="false"/>
+        <field name="city" type="string" column="business_city" length="2" nullable="false"/>
+        <field name="addressLine1" type="string" column="business_address_line_1" length="128" nullable="false"/>
+        <field name="addressLine2" type="string" column="business_address_line_2" length="128" nullable="true"/>
+    </embeddable>
+</doctrine-mapping>

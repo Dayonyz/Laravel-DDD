@@ -1,8 +1,0 @@
-<doctrine-mapping xmlns="https://doctrine-project.org/schemas/orm/doctrine-mapping"
-                  xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
-                  xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
-                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-    <embeddable name="App\Domains\IdentityAccess\Domain\Entities\Business\BusinessWebsite" table="passwordes">
-        <field name="url" type="string" column="business_website" length="1024" nullable="false"/>
-    </embeddable>
-</doctrine-mapping>

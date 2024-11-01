@@ -1,6 +1,6 @@
 <?php
 
-use App\Domains\IdentityAccess\Domain\Enums\UserTitleEnum;
+use App\Domains\IdentityAccess\Domain\Entities\User\Enums\UserTitleEnum;
 use App\Domains\IdentityAccess\Application\Bus\Command\CreateBusinessAccountCommand;
 use Illuminate\Support\Facades\Route;
 

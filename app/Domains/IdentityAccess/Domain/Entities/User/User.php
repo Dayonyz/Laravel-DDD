@@ -2,11 +2,18 @@
 
 namespace App\Domains\IdentityAccess\Domain\Entities\User;
 
+use App\Domains\IdentityAccess\Domain\Entities\User\ValueObjects\UserAvatar;
+use App\Domains\IdentityAccess\Domain\Entities\User\ValueObjects\UserDisplayName;
+use App\Domains\IdentityAccess\Domain\Entities\User\ValueObjects\UserEmail;
+use App\Domains\IdentityAccess\Domain\Entities\User\ValueObjects\UserFullName;
+use App\Domains\IdentityAccess\Domain\Entities\User\ValueObjects\UserPassword;
+use App\Domains\IdentityAccess\Domain\Entities\User\ValueObjects\UserPhone;
+use App\Domains\IdentityAccess\Domain\Entities\User\ValueObjects\UserUuid;
 use App\Domains\Shared\Domain\Entity;
 use App\Domains\Shared\Domain\ValueObject\Password;
-use App\Domains\IdentityAccess\Domain\Enums\UserAccountTypeEnum;
-use App\Domains\IdentityAccess\Domain\Enums\UserTitleEnum;
-use App\Domains\IdentityAccess\Domain\Entities\User\Dto\UserDto;
+use App\Domains\IdentityAccess\Domain\Entities\User\Enums\UserAccountTypeEnum;
+use App\Domains\IdentityAccess\Domain\Entities\User\Enums\UserTitleEnum;
+use App\Domains\IdentityAccess\Domain\Entities\User\Dto\UserCreateDto;
 
 abstract class User extends Entity
 {
@@ -22,7 +29,7 @@ abstract class User extends Entity
     protected bool $isActive;
 
     protected function __construct(
-        UserDto $userDto,
+        UserCreateDto $userDto,
     ) {
         parent::__construct();
         $this->setUuid(UserUuid::random());

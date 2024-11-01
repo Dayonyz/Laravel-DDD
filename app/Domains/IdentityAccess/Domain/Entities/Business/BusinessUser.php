@@ -3,9 +3,9 @@
 namespace App\Domains\IdentityAccess\Domain\Entities\Business;
 
 use App\Domains\IdentityAccess\Domain\Aggregates\BusinessAggregate;
-use App\Domains\IdentityAccess\Domain\Entities\User\Dto\UserDto;
+use App\Domains\IdentityAccess\Domain\Entities\User\Dto\UserCreateDto;
 use App\Domains\IdentityAccess\Domain\Entities\User\User;
-use App\Domains\IdentityAccess\Domain\Enums\UserAccountTypeEnum;
+use App\Domains\IdentityAccess\Domain\Entities\User\Enums\UserAccountTypeEnum;
 
 class BusinessUser extends User
 {
@@ -14,7 +14,7 @@ class BusinessUser extends User
 
     private function __construct(
         BusinessAggregate   $business,
-        UserDto             $userDto
+        UserCreateDto $userDto
     ) {
         parent::__construct(
             $userDto
@@ -41,7 +41,7 @@ class BusinessUser extends User
 
     public static function createBusinessUser(
         BusinessAggregate $business,
-        UserDto           $userDto
+        UserCreateDto $userDto
     ): static {
        return new static(
            $business,

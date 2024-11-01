@@ -4,14 +4,14 @@ namespace App\Domains\IdentityAccess\Domain\Aggregates;
 
 use App\Domains\IdentityAccess\Domain\Entities\Business\Business;
 use App\Domains\IdentityAccess\Domain\Entities\Business\BusinessUser;
-use App\Domains\IdentityAccess\Domain\Entities\User\Dto\UserDto;
+use App\Domains\IdentityAccess\Domain\Entities\User\Dto\UserCreateDto;
 use App\Domains\IdentityAccess\Domain\Events\BusinessAccountRegistrationDiscarded;
 use App\Domains\IdentityAccess\Domain\Events\BusinessAccountRegistered;
 
 class BusinessAggregate extends Business
 {
     protected function createBusinessUser(
-        UserDto $userDto
+        UserCreateDto $userDto
     ): BusinessUser {
         return BusinessUser::createBusinessUser(
             $this,
